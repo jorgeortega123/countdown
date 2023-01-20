@@ -1,0 +1,176 @@
+import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
+export default function AddCountdowns({setreloadCount, reloadCount}) {
+  const [showEmail, setshowEmail] = useState(false);
+  const [currentlyEmail, setcurrentlyEmail] = useState("");
+  const [showMensaje, setshowMensaje] = useState()
+  const [information, setinformation] = useState({
+    email: "",
+    name: "",
+    init: "",
+    hour_init: "",
+    finish: "",
+    hour_finish: "",
+    sent_email: false,
+  });
+
+  useEffect(() => {
+    const d = new Date()
+    var [year, month, day] = [ d.getFullYear(),d.getMonth(), d.getDay()]
+    var [hour, minute ]= [d.getHours(),d.getMinutes() ]
+    if (month < 10) {  
+      if (month===0) month = 1
+      month = `0` + month
+    } 
+    if (day < 10) { 
+      if(day===0) day = 1
+      day  = `0` + day 
+    }
+    if (hour < 10) { 
+      if(hour===0) hour = 1
+      hour  = `0` + hour
+    }
+    if (minute < 10) { 
+      if(minute===0) minute = 1
+      minute = `0` + minute
+    }
+    const init_day = year + "-" + month + "-" + day
+    const actualHour = hour+ ":" + minute
+    setinformation((prevState) => ({ ...prevState, hour_init: actualHour, hour_finish: actualHour, init: init_day, finish:  init_day     })); 
+  }, []);
+ console.log(information)
+  // const togle = () => {
+  //   setshowEmail(!showEmail);
+  //   unirElementos(showEmail, "sent_email");
+  // };
+  // const verifyEmail = () => {
+  //   var { email } = JSON.parse(localStorage.getItem("token"));
+  //   if (email) {
+  //     setcurrentlyEmail({ email });
+  //   }
+  // };
+  const unirElementos = (valor, cabecera) => {
+    setinformation((prevState) => ({ ...prevState, [cabecera]: valor }));
+    console.log(information);
+  };
+  const addButton = () => {
+    var cache = JSON.parse(localStorage.getItem("counts")) 
+    var {finish, name} = information
+    if (finish === ""|| finish === undefined ) { 
+      setshowMensaje("Specify end of date")
+      return
+    } 
+    else if (name === "") { 
+      setshowMensaje("You must have to put NAME to your countdown")
+      return
+    }
+    if (cache) { 
+      cache.push(information)
+     } else { 
+      localStorage.setItem("counts", JSON.stringify([information]))
+     }
+     setshowMensaje("Added success")
+     setreloadCount(!reloadCount)
+  };
+
+  return (
+    <div id="addcount" className=" p-2 rounded-[6px]  text-white">
+      <p className="font-bold">Agregar <span className="font-normal text-red-500 px-6">{showMensaje}</span></p>
+      <div className="my-2 input-container flex flex-col border relative p-[3px]">
+        <p className="text-[1rem] top-[-2px] absolute text-above-forms">
+          Nombre
+        </p>
+        <input
+          onChange={(e) => {
+            unirElementos(e.target.value, "name");
+          }}
+          className="h-[40px] mt-[15px] px-2"
+          placeholder="123"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-2 my-2 ">
+        <div className=" input-container flex flex-col border relative p-[3px]">
+          <p className="text-[1rem] absolute text-above-forms">inicio</p>
+          <input
+            onChange={(e) => {
+              unirElementos(e.target.value, "init");
+            }}
+            className="h-[40px] mt-[22px] px-2"
+            type="date"
+            placeholder="12/12/2012"
+            defaultValue={information.init}
+          />
+        </div>
+        <div className="input-container flex flex-col border relative p-[3px]">
+          <p className="text-[1rem] absolute text-above-forms">Fin</p>
+          <input
+            onChange={(e) => {
+              unirElementos(e.target.value, "finish");
+            }}
+            className="h-[40px] mt-[22px] px-2"
+            type="date"
+            placeholder="12/12/2012"
+            defaultValue={information.finish}
+          />
+        </div>
+        <div className="flex justify-center ">
+          <p className="px-1">Hour</p>
+          <input
+            onChange={(e) => {
+              unirElementos(e.target.value, "hour_init");
+            }}
+            type="time"
+            className="border-[1px] rounded-[6px] px-1 border-[#2c2c2cf6] hover:border-[#fff]"
+            defaultValue={information.hour_init}
+            name=""
+            id=""
+          />
+        </div>
+        <div className="flex justify-center">
+        <p className="px-1">Hour</p>
+          <input
+            onChange={(e) => {
+              unirElementos(e.target.value, "hour_finish");
+            }}
+            type="time"
+             className="border-[1px] rounded-[6px] px-1 border-[#2c2c2cf6] hover:border-[#fff]"
+            defaultValue={information.hour_finish}
+            name=""
+            id=""
+          />
+        </div>
+      </div>
+      <div onClick={()=>addButton()} className="mx-auto w-full text-center mt-4 ">
+        <p className="w-full border-[1px] rounded-[6px] py-2 button-form border my-3 rounded-[6px]">
+          Add countdown
+        </p>
+      </div>
+      {/* <div className="overflow-hidden">
+        <div className="relative flex p-[5px] cursor-pointer">
+          <input onChange={() => togle()} className="" type="checkbox" />
+          <label className="mt-[7px] px-2" htmlFor="accordion-email">
+            Enviar por correo
+          </label>
+        </div>
+        {showEmail && (
+          <div v-if="show===true" className="container-email-input my-2 ">
+            <p className="text-above-forms">
+              Notificar por correo o por mensaje
+            </p>
+            <input
+              className="input-container mr-2  p-2 border"
+              type="email"
+              onChange={(e) => {
+                setcurrentlyEmail(e.target.value);
+              }}
+              placeholder="example@gmail.com"
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+              title="Invalid email address"
+              defaultValue={currentlyEmail}
+            />
+          </div>
+        )}
+      </div> */}
+    </div>
+  );
+}

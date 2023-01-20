@@ -1,15 +1,16 @@
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 
-export default function Countdown() {
+export default function Countdown( {init, finish, mini, showLines} ) {
+  
   const [date, setdate] = useState({});
   useEffect(() => {
+
     const interval = setInterval(count, 1000);
     return () => clearInterval(interval);
-  }, [date]);
-
-  var a = dayjs(dayjs().endOf("year").$d);
-  var b = dayjs().$d;
+  });
+  var a = finish ? dayjs(dayjs(finish).$d) : dayjs(dayjs().endOf("year").$d);
+  var b =  init ? dayjs(init).$d : dayjs().$d;
   var [q, w, e, r] = [
     a.diff(b, "days"),
     a.diff(b, "hours"),
@@ -44,24 +45,50 @@ export default function Countdown() {
     setdate({ days: days, hours: hours, minutes: minutes, secs: seconds });
   };
   //  setInterval(count, 1000);
+  if (mini)
+     
+    return (
+      <p>
+        {date.days}:{date.hours}:{date.minutes}:{date.secs}
+      </p>
+    );
   return (
-    <div className="flex flex-col items-center justify-center relative">
-      <p className="w-[320px] lg:w-[1450px] flex  items-center h-full">
-        <span className="days">{date.days}</span> 
-        <span className="dots-main">:</span>
-        <span className="hours">{date.hours}</span>
-        <span className="dots-main">:</span>
-        <span className="minutes"> {date.minutes}</span>
-        <span className="dots-main">:</span>
-        <span className="sec"> {date.secs}</span>
-      </p>
-      <p className="absolute bottom-0 text-[12px] flex space-x-8 lg:space-x-[260px]">
-        <span className="text-under-numbers days lg:text-[45px]"> Days</span>
-        <span className="text-under-numbers lg:text-[45px]"> Hours</span>
-        <span className="text-under-numbers minutes lg:text-[45px]"> Mins</span>
-        <span className="text-under-numbers lg:text-[45px]"> Secs</span>
-        
-      </p>
+    <div className="flex  items-center h-full">
+      <div className="relative countdown-container-number days">
+        {date.days}
+        {showLines && (
+          <p className="absolute w-full text-center font-under-word-countdow">
+            Days
+          </p>
+        )}
+      </div>
+      <div className="relative dots-main">:</div>
+      <div className="relative countdown-container-number  hours">
+        {date.hours}
+        {showLines && (
+          <p className="absolute w-full text-center  font-under-word-countdow">
+            Hours
+          </p>
+        )}
+      </div>
+      <div className="relative dots-main">:</div>
+      <div className="relative countdown-container-number  minutes">
+        {date.minutes}
+        {showLines && (
+          <p className="absolute w-full text-center  font-under-word-countdow">
+            Minutes
+          </p>
+        )}
+      </div>
+      <div className="relative dots-main">:</div>
+      <div className="relative  countdown-container-number sec">
+        {date.secs}
+        {showLines && (
+          <p className="absolute w-full text-center font-under-word-countdow">
+            Seconds
+          </p>
+        )}
+      </div>
     </div>
   );
 }
