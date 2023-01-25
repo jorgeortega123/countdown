@@ -10,6 +10,7 @@ export default function OthersCountdowns({ setreloadCount, reloadCount }) {
     }
     console.log(events);
     for (let x = 0; x < userCounts.length; x++) {
+      console.log(userCounts[x]);
       events[events.length - 1].dates.push(userCounts[x]);
       console.log(userCounts[x]);
     }
@@ -64,7 +65,11 @@ export default function OthersCountdowns({ setreloadCount, reloadCount }) {
                 <div className="title-count-component min-w-[180px]">
                   <p>{e.name}</p>
                 </div>
-                <Countdown finish={e.date} mini={true} showLines={false} />
+                {e.init ? (
+                  <Countdown init_data={e.init}  init={true} finish={e.date} mini={true} showLines={false} />
+                ) : (
+                  <Countdown finish={e.date} mini={true} showLines={false} />
+                )}
               </div>
             ))}
           </div>

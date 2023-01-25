@@ -1,44 +1,49 @@
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
-export default function AddCountdowns({setreloadCount, reloadCount}) {
+export default function AddCountdowns({ setreloadCount, reloadCount }) {
   const [showEmail, setshowEmail] = useState(false);
   const [currentlyEmail, setcurrentlyEmail] = useState("");
-  const [showMensaje, setshowMensaje] = useState()
+  const [showMensaje, setshowMensaje] = useState();
   const [information, setinformation] = useState({
     email: "",
     name: "",
     init: "",
     hour_init: "",
-    finish: "",
+    date: "",
     hour_finish: "",
     sent_email: false,
   });
 
   useEffect(() => {
-    const d = new Date()
-    var [year, month, day] = [ d.getFullYear(),d.getMonth(), d.getDay()]
-    var [hour, minute ]= [d.getHours(),d.getMinutes() ]
-    if (month < 10) {  
-      if (month===0) month = 1
-      month = `0` + month
-    } 
-    if (day < 10) { 
-      if(day===0) day = 1
-      day  = `0` + day 
+    const d = new Date();
+    var [year, month, day] = [d.getFullYear(), d.getMonth(), d.getDay()];
+    var [hour, minute] = [d.getHours(), d.getMinutes()];
+    if (month < 10) {
+      if (month === 0) month = 1;
+      month = `0` + month;
     }
-    if (hour < 10) { 
-      if(hour===0) hour = 1
-      hour  = `0` + hour
+    if (day < 10) {
+      if (day === 0) day = 1;
+      day = `0` + day;
     }
-    if (minute < 10) { 
-      if(minute===0) minute = 1
-      minute = `0` + minute
+    if (hour < 10) {
+      if (hour === 0) hour = 1;
+      hour = `0` + hour;
     }
-    const init_day = year + "-" + month + "-" + day
-    const actualHour = hour+ ":" + minute
-    setinformation((prevState) => ({ ...prevState, hour_init: actualHour, hour_finish: actualHour, init: init_day, finish:  init_day     })); 
+    if (minute < 10) {
+      if (minute === 0) minute = 1;
+      minute = `0` + minute;
+    }
+    const init_day = year + "-" + month + "-" + day;
+    const actualHour = hour + ":" + minute;
+    setinformation((prevState) => ({
+      ...prevState,
+      hour_init: actualHour,
+      hour_finish: actualHour,
+      init: init_day,
+      date: init_day,
+    }));
   }, []);
- console.log(information)
   // const togle = () => {
   //   setshowEmail(!showEmail);
   //   unirElementos(showEmail, "sent_email");
@@ -54,28 +59,36 @@ export default function AddCountdowns({setreloadCount, reloadCount}) {
     console.log(information);
   };
   const addButton = () => {
-    var cache = JSON.parse(localStorage.getItem("counts")) 
-    var {finish, name} = information
-    if (finish === ""|| finish === undefined ) { 
-      setshowMensaje("Specify end of date")
-      return
-    } 
-    else if (name === "") { 
-      setshowMensaje("You must have to put NAME to your countdown")
-      return
+    var cache = JSON.parse(localStorage.getItem("counts"));
+    console.log(cache);
+    var {  name, date, hour_finish, init, hour_init } = information;
+    date = date + " " + hour_finish;
+    init = init + " " + hour_init;
+    information.date= date
+    information.init = init
+    if (date=== "" || date=== undefined) {
+      setshowMensaje("Specify end of date");
+      return;
+    } else if (name === "") {
+      setshowMensaje("You must have to put NAME to your countdown");
+      return;
     }
-    if (cache) { 
-      cache.push(information)
-     } else { 
-      localStorage.setItem("counts", JSON.stringify([information]))
-     }
-     setshowMensaje("Added success")
-     setreloadCount(!reloadCount)
+    if (cache) {
+      cache.push(information);
+      localStorage.setItem("counts", JSON.stringify(cache));
+    } else {
+      localStorage.setItem("counts", JSON.stringify([information]));
+    }
+    setshowMensaje("Added success");
+    setreloadCount(!reloadCount);
   };
 
   return (
     <div id="addcount" className=" p-2 rounded-[6px]  text-white">
-      <p className="font-bold">Agregar <span className="font-normal text-red-500 px-6">{showMensaje}</span></p>
+      <p className="font-bold">
+        Agregar{" "}
+        <span className="font-normal text-red-500 px-6">{showMensaje}</span>
+      </p>
       <div className="my-2 input-container flex flex-col border relative p-[3px]">
         <p className="text-[1rem] top-[-2px] absolute text-above-forms">
           Nombre
@@ -105,12 +118,12 @@ export default function AddCountdowns({setreloadCount, reloadCount}) {
           <p className="text-[1rem] absolute text-above-forms">Fin</p>
           <input
             onChange={(e) => {
-              unirElementos(e.target.value, "finish");
+              unirElementos(e.target.value, "date");
             }}
             className="h-[40px] mt-[22px] px-2"
             type="date"
             placeholder="12/12/2012"
-            defaultValue={information.finish}
+            defaultValue={information.init}
           />
         </div>
         <div className="flex justify-center ">
@@ -127,20 +140,23 @@ export default function AddCountdowns({setreloadCount, reloadCount}) {
           />
         </div>
         <div className="flex justify-center">
-        <p className="px-1">Hour</p>
+          <p className="px-1">Hour</p>
           <input
             onChange={(e) => {
               unirElementos(e.target.value, "hour_finish");
             }}
             type="time"
-             className="border-[1px] rounded-[6px] px-1 border-[#2c2c2cf6] hover:border-[#fff]"
+            className="border-[1px] rounded-[6px] px-1 border-[#2c2c2cf6] hover:border-[#fff]"
             defaultValue={information.hour_finish}
             name=""
             id=""
           />
         </div>
       </div>
-      <div onClick={()=>addButton()} className="mx-auto w-full text-center mt-4 ">
+      <div
+        onClick={() => addButton()}
+        className="mx-auto w-full text-center mt-4 "
+      >
         <p className="w-full border-[1px] rounded-[6px] py-2 button-form border my-3 rounded-[6px]">
           Add countdown
         </p>

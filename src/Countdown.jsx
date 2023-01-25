@@ -1,22 +1,26 @@
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 
-export default function Countdown( {init, finish, mini, showLines} ) {
-  
+export default function Countdown({ init, init_data, finish, mini, showLines }) {
   const [date, setdate] = useState({});
   useEffect(() => {
-
     const interval = setInterval(count, 1000);
     return () => clearInterval(interval);
   });
+  var b = init ? dayjs(dayjs(init_data).$d) : dayjs(dayjs().$d);
   var a = finish ? dayjs(dayjs(finish).$d) : dayjs(dayjs().endOf("year").$d);
-  var b =  init ? dayjs(init).$d : dayjs().$d;
+ if (init){
+  console.log("MENOr",b)
+  console.log("MAYOR",a)
+  console.log("ASDSADAS", init)}
+ 
   var [q, w, e, r] = [
     a.diff(b, "days"),
     a.diff(b, "hours"),
     a.diff(b, "minutes"),
     a.diff(b, "seconds"),
   ];
+
   let hours = w - q * 24,
     minutes = e - w * 60,
     days = q,
@@ -46,7 +50,6 @@ export default function Countdown( {init, finish, mini, showLines} ) {
   };
   //  setInterval(count, 1000);
   if (mini)
-     
     return (
       <p>
         {date.days}:{date.hours}:{date.minutes}:{date.secs}
