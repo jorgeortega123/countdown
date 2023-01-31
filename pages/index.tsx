@@ -10,29 +10,59 @@ export default function Home() {
   const [reloadCount, setreloadCount] = useState(false);
   const [showLogin, setshowLogin] = useState(false);
   const [showFullScreen, setshowFullScreen] = useState(false);
+  const [rotate, setrotate] = useState(false);
   useEffect(() => {
     //@ts-ignore
     var local = JSON.parse(localStorage.getItem("anchor"));
     if (local) {
       setfixedCount({ name: local.name, date: local.date });
     }
-  }, [reloadCount]);
+    if (showFullScreen) {
+      document.getElementById("full")?.requestFullscreen();
+      document.body.style.overflow = "hidden";
+    } else {
+      document.getElementById("full");
+      var event = new KeyboardEvent("keydown", {
+        keyCode: 122,
+        which: 122,
+      });
+      document.dispatchEvent(event);
+      document.body.style.overflow = "scroll";
+    }
+  }, [reloadCount, showFullScreen]);
 
   return (
     <>
-      <div className="max-w-screen relative">
+      <div id="full" className="max-w-screen relative">
         {showFullScreen && (
-          <div
-            onClick={() => setshowFullScreen(false)}
-            className="absolute w-full h-screen bg-[#141414] z-[4]"
-          >
-            <p className="absolute">Close</p>
+          <div className="absolute w-full h-screen bg-[#141414] z-[3]">
+            <p
+              onClick={() => setshowFullScreen(false)}
+              className="absolute right-0 px-3 pt-2"
+            >
+              X
+            </p>
 
-            <div className="  h-full flex justify-center items-center">
-              <div className="relative title-count counter-font ">
-                <p className="absolute text-center w-full mx-auto my-auto top-[-8vw] font-[normal] text-[4vw]">
+            <div className="  h-full flex justify-center items-center z-[5]">
+              <div
+                onClick={() => setrotate(!rotate)}
+                className="absolute bottom-0"
+              >
+                <p>Rotar 180</p>
+              </div>
+              <div
+                className={`relative counter-font ${
+                  rotate ? "rotate-90 text-[26vw]" : " title-count "
+                }  `}
+              >
+                <p
+                  className={`absolute text-center w-full mx-auto my-auto  font-[normal] ${
+                    rotate ? "text-[8vw] top-[-15vw]" : "text-[4vw] top-[-8vw] "
+                  } `}
+                >
                   {fixedCount.name}
                 </p>
+                {/* @ts-ignore */}
                 <Countdown finish={fixedCount.date} />
               </div>
             </div>
@@ -45,10 +75,10 @@ export default function Home() {
         <NavView setshowLogin={setshowLogin} />
         <div>
           <div className="p-2 flex flex-col space-y-12">
-            <div id="main" className="">
+            <div id="main" className="sticky top-2 z-[3]">
               <div
                 id="container-fixed"
-                className=" fixed rounded-[6px]  flex flex-col w-full justify-center p-[3px]  "
+                className=" sticky top-0 rounded-[6px]  flex flex-col w-full justify-center p-[3px]  "
               >
                 <div className=" main-color-background h-[40vh] z-[1]  rounded-[6px] p-2">
                   <div className=" h-full relative">
@@ -72,6 +102,7 @@ export default function Home() {
 
                     <div className=" counter-font title-count h-full flex justify-center items-center ">
                       <div>
+                        {/* @ts-ignore */}
                         <Countdown
                           finish={fixedCount.date}
                           showLines={"true"}
@@ -97,7 +128,10 @@ export default function Home() {
                   reloadCount={reloadCount}
                   setreloadCount={setreloadCount}
                 />
-                <AddCountdowns reloadCount={reloadCount} setreloadCount={setreloadCount} />
+                <AddCountdowns
+                  reloadCount={reloadCount}
+                  setreloadCount={setreloadCount}
+                />
               </div>
             </div>
           </div>
@@ -108,12 +142,22 @@ export default function Home() {
         >
           <div>
             <p className="py-2 font-bold">Countdown</p>
-            <div className="">  Made by <span> Jorge Ortega</span>
-            <p>Another proyect to portfolio</p></div>
-          
+            <div className="">
+              {" "}
+              Made by <span> Jorge Ortega</span>
+              <p>Another proyect to portfolio</p>
+            </div>
+
             <p className="absolute bottom-0 left-0 px-1 text-[13px]">
               Want to see more proyects like this ?{" "}
-              <a href="https://jorge-ortega.pages.dev/" target={"_blank"} rel="noopener" className="underline">Click here</a>
+              <a
+                href="https://jorge-ortega.pages.dev/"
+                target={"_blank"}
+                rel="noreferrer "
+                className="underline"
+              >
+                Click here
+              </a>
             </p>
           </div>
         </div>

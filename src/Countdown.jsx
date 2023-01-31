@@ -9,10 +9,10 @@ export default function Countdown({ init, init_data, finish, mini, showLines }) 
   });
   var b = init ? dayjs(dayjs(init_data).$d) : dayjs(dayjs().$d);
   var a = finish ? dayjs(dayjs(finish).$d) : dayjs(dayjs().endOf("year").$d);
- if (init){
-  console.log("MENOr",b)
-  console.log("MAYOR",a)
-  console.log("ASDSADAS", init)}
+//  if (init){
+//   console.log("MENOr",b)
+//   console.log("MAYOR",a)
+//   console.log("ASDSADAS", init)}
  
   var [q, w, e, r] = [
     a.diff(b, "days"),

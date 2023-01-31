@@ -138,6 +138,7 @@ body {
 }
 .title-count {
   font-size: var(--fontsize);
+  transition: all .5s;
 }
 
 .asd { 
@@ -167,7 +168,6 @@ body {
 }
 #container-fixed {
   transition: all 2s;
-  position: relative;
   z-index: 2;
   overflow: hidden;
 }

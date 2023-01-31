@@ -16,7 +16,12 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
 
   useEffect(() => {
     const d = new Date();
-    var [year, month, day] = [d.getFullYear(), d.getMonth(), d.getDay()];
+    var [year, month, day] = [
+      dayjs().get("year"),
+      dayjs().get("month"),
+      dayjs().get("date"),
+    ];
+    console.log(year, month, day);
     var [hour, minute] = [d.getHours(), d.getMinutes()];
     if (month < 10) {
       if (month === 0) month = 1;
@@ -56,17 +61,18 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
   // };
   const unirElementos = (valor, cabecera) => {
     setinformation((prevState) => ({ ...prevState, [cabecera]: valor }));
-    console.log(information);
   };
   const addButton = () => {
     var cache = JSON.parse(localStorage.getItem("counts"));
-    console.log(cache);
-    var {  name, date, hour_finish, init, hour_init } = information;
+
+    var { name, date, hour_finish, init, hour_init } = information;
+    //     date = date
+    // init = init
     date = date + " " + hour_finish;
     init = init + " " + hour_init;
-    information.date= date
-    information.init = init
-    if (date=== "" || date=== undefined) {
+    information.date = date;
+    information.init = init;
+    if (date === "" || date === undefined) {
       setshowMensaje("Specify end of date");
       return;
     } else if (name === "") {
@@ -90,8 +96,8 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
         <span className="font-normal text-red-500 px-6">{showMensaje}</span>
       </p>
       <div className="my-2 input-container flex flex-col border relative p-[3px]">
-        <p className="text-[1rem] top-[-2px] absolute text-above-forms">
-          Nombre
+        <p className="text-[1rem] top-[-2px] absolute text-above-forms pl-1 pt-1">
+          Name of countdown
         </p>
         <input
           onChange={(e) => {
@@ -103,7 +109,7 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
       </div>
       <div className="grid grid-cols-2 gap-2 my-2 ">
         <div className=" input-container flex flex-col border relative p-[3px]">
-          <p className="text-[1rem] absolute text-above-forms">inicio</p>
+          <p className="text-[1rem] absolute text-above-forms pl-1 pt-1">Start</p>
           <input
             onChange={(e) => {
               unirElementos(e.target.value, "init");
@@ -115,7 +121,7 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
           />
         </div>
         <div className="input-container flex flex-col border relative p-[3px]">
-          <p className="text-[1rem] absolute text-above-forms">Fin</p>
+          <p className="text-[1rem] absolute text-above-forms pl-1 pt-1">End</p>
           <input
             onChange={(e) => {
               unirElementos(e.target.value, "date");
@@ -127,7 +133,7 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
           />
         </div>
         <div className="flex justify-center ">
-          <p className="px-1">Hour</p>
+          <p className="px-1">Hour:</p>
           <input
             onChange={(e) => {
               unirElementos(e.target.value, "hour_init");
@@ -140,7 +146,7 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
           />
         </div>
         <div className="flex justify-center">
-          <p className="px-1">Hour</p>
+          <p className="px-1">Hour:</p>
           <input
             onChange={(e) => {
               unirElementos(e.target.value, "hour_finish");
