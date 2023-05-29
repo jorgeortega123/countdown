@@ -5,7 +5,8 @@
 }
 :root {
   --maincolor: #181818;
-  --fontsize: 14vw;
+  --fontsize: 12vw
+  ;
   --vt-c-white: #181818;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
@@ -288,4 +289,21 @@ input[type="email"] {
   100% { 
     transform: translateX(0) rotate(20deg);
   }
+}
+.cuadricula {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 400px; /* Ajusta el ancho de la cuadrícula según tus necesidades */
+  height: full; /* Ajusta la altura de la cuadrícula según tus necesidades */
+  /* border: 1px solid #ccc; Opcional: agregar un borde a la cuadrícula */
+  gap: 12px;
+}
+
+.cuadricula-item {
+  border-radius: 6px;
+  flex-basis: 36px; /* Ajusta el tamaño de los elementos div según tus necesidades */
+  height: 36px; /* Ajusta la altura de los elementos div según tus necesidades */
+ 
+
 }

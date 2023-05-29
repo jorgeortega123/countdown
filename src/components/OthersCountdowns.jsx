@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import React, { useEffect } from "react";
 import events from "../../events";
 import Countdown from "../../src/Countdown";
@@ -38,8 +39,13 @@ export default function OthersCountdowns({ setreloadCount, reloadCount }) {
             </div>
           </div>
           <div className="grid other-counts-component grid-cols-2 sm:grid-cols-2 gap-3">
-            {data.dates.map((e, indexx) => (
-              <div
+            {data.dates.map((e, indexx) => {
+              var init_date = dayjs()
+              var finish_date = dayjs(dayjs(e.date).$d) 
+              if (init_date.isAfter(finish_date)) { 
+                return <></>
+              }
+              return ( <div
                 key={"coutndown" + indexx}
                 onClick={() => anchorCount(data, e)}
                 title="anchor"
@@ -66,12 +72,20 @@ export default function OthersCountdowns({ setreloadCount, reloadCount }) {
                   <p className="text-center">{e.name}</p>
                 </div>
                 {e.init ? (
-                  <Countdown init_data={e.init}  init={true} finish={e.date} mini={true} showLines={false} />
+                  <Countdown
+                    init_data={e.init}
+                    init={true}
+                    finish={e.date}
+                    mini={true}
+                    showLines={false}
+                  />
                 ) : (
                   <Countdown finish={e.date} mini={true} showLines={false} />
                 )}
-              </div>
-            ))}
+              </div>)
+              
+             
+            })}
           </div>
         </div>
       ))}

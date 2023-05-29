@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
+import Parse from 'parse/dist/parse.min.js';
+const PARSE_APPLICATION_ID = 'BCrUQVkk80pCdeImSXoKXL5ZCtyyEZwbN7mAb11f';
+const PARSE_HOST_URL = 'https://parseapi.back4app.com';
+const PARSE_JAVASCRIPT_KEY = '4wPYRKbpTJeCdmFNaS31AiQZ8344aaYubk6Uo8VW';
+Parse.initialize(PARSE_APPLICATION_ID, PARSE_JAVASCRIPT_KEY);
+Parse.serverURL = PARSE_HOST_URL;
 export default function AddCountdowns({ setreloadCount, reloadCount }) {
   const [showEmail, setshowEmail] = useState(false);
   const [currentlyEmail, setcurrentlyEmail] = useState("");
@@ -64,7 +70,6 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
   };
   const addButton = () => {
     var cache = JSON.parse(localStorage.getItem("counts"));
-
     var { name, date, hour_finish, init, hour_init } = information;
     //     date = date
     // init = init
@@ -76,24 +81,40 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
       setshowMensaje("Specify end of date");
       return;
     } else if (name === "") {
-      setshowMensaje("You must have to put NAME to your countdown");
+      setshowMensaje("Name missing");
       return;
     }
-    if (cache) {
-      cache.push(information);
-      localStorage.setItem("counts", JSON.stringify(cache));
-    } else {
-      localStorage.setItem("counts", JSON.stringify([information]));
-    }
-    setshowMensaje("Added success");
-    setreloadCount(!reloadCount);
+    // if (cache) {
+    //   cache.push(information);
+    //   localStorage.setItem("counts", JSON.stringify(cache));
+    // } else {
+    //   localStorage.setItem("counts", JSON.stringify([information]));
+    // }
+    // setshowMensaje("Added success");
+    // setreloadCount(!reloadCount);
+    
+    const dataBaseSave = async() => {
+      //verify user
+      let user = "jorge593s"
+      const query = new Parse.Query('users');
+      query.equalTo('userId', user);
+      const infoUser = await query.first()
+      // setshowMensaje(infoUser);
+      if (infoUser === undefined || infoUser === "") { 
+        setshowMensaje("User not found")
+      } else { 
+        setshowMensaje(infoUser.get('userName'))
+      }
+      
+    };
+    dataBaseSave()
   };
 
   return (
     <div id="addcount" className=" p-2 rounded-[6px]  text-white">
       <p className="font-bold">
-        Agregar{" "}
-        <span className="font-normal text-red-500 px-6">{showMensaje}</span>
+        Agregar
+        <span className="font-normal text-red-500 px-4">{showMensaje}</span>
       </p>
       <div className="my-2 input-container flex flex-col border relative p-[3px]">
         <p className="text-[1rem] top-[-2px] absolute text-above-forms pl-1 pt-1">
@@ -109,7 +130,9 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
       </div>
       <div className="grid grid-cols-2 gap-2 my-2 ">
         <div className=" input-container flex flex-col border relative p-[3px]">
-          <p className="text-[1rem] absolute text-above-forms pl-1 pt-1">Start</p>
+          <p className="text-[1rem] absolute text-above-forms pl-1 pt-1">
+            Start
+          </p>
           <input
             onChange={(e) => {
               unirElementos(e.target.value, "init");
