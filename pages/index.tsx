@@ -74,7 +74,7 @@ export default function Home() {
                 onClick={() => setrotate(!rotate)}
                 className="absolute bottom-0 sm:hidden"
               >
-                <p>Rotar 180</p>
+                <p>Rotar 90</p>
               </div>
               <div
                 className={`relative counter-font ${
