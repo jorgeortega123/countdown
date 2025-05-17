@@ -2,104 +2,208 @@
 import Parse from "parse/dist/parse.min.js";
 import { customAlphabet } from "nanoid";
 import dayjs from "dayjs";
-
+import useUser from "../context/useUser";
+import { addToast } from "@heroui/react";
+import { toCalendarDateTime } from "@internationalized/date";
 // Your Parse initialization configuration goes here
 const PARSE_APPLICATION_ID = process.env.NEXT_PUBLIC_APPLICATION_ID;
 const PARSE_HOST_URL = "https://parseapi.back4app.com";
-const PARSE_JAVASCRIPT_KEY = process.env.NEXT_PUBLIC_JAVASCRIPT_KEY;
+const PARSE_JAVASCRIPT_KEY = process.env.NEXT_PUBLIC_JS_KEY;
 Parse.initialize(PARSE_APPLICATION_ID, PARSE_JAVASCRIPT_KEY);
 Parse.serverURL = PARSE_HOST_URL;
 
-const verifyUserFromCache = async (): Promise<any> => {
+const verifyUserFromCache = async (): Promise<usuarioProps | null> => {
   const tokenCache = localStorage.getItem("token");
   if (!tokenCache) {
     return null;
   } else {
-    return verifyUserFromDb(tokenCache);
+    // return await verifyUserFromDb(tokenCache);
+    return { userId: tokenCache };
   }
 };
 
-const verifyUserFromDb = async (token: string): Promise<any> => {
-  try {
-    const query = new Parse.Query("users");
-    query.equalTo("userId", token);
+export interface countDownProps {
+  startDate: string;
+  endDate: string;
+  nameCountDown: string;
+  createdBy?: string;
+}
 
+export interface promiseProps {
+  success: boolean;
+  message: string;
+}
+export interface usuarioProps {
+  name?: string;
+  email?: string;
+  defaultPassword?: string;
+  userId: string;
+}
+export const verifyUserGetToken = async (): Promise<usuarioProps | null> => {
+  const tokenFromLocal = localStorage.getItem("token");
+  if (!tokenFromLocal) {
+    return null;
+  }
+
+  try {
+    const query = new Parse.Query("usuarios");
+    query.equalTo("userId", tokenFromLocal);
     const results = await query.find();
 
-    return results;
+    if (results.length > 0) {
+      const user = results[0]; // Tomamos el primer resultado
+      console.log(user);
+      return {
+        userId: user.get("userId"),
+        defaultPassword: user.get("defaultPassword"),
+        email: user.get("email"),
+        name: user.get("name"),
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("Error verifying user:", error);
+    return null;
+  }
+};
+const verifyUserFromDb = async (
+  token: string
+): Promise<usuarioProps | null> => {
+  try {
+    const query = new Parse.Query("usuarios");
+    query.equalTo("userId", token);
+    const results = await query.find();
+    if (results.id) {
+      return {
+        userId: token,
+      };
+    }
+    return null;
   } catch (error: Parse.Error) {
     console.log(
       "Error al buscar el usuario: " + error.code + " " + error.message
     );
+    localStorage.setItem("token", "");
     return null;
   }
 };
-
-export const createUser = async (): Promise<boolean> => {
+export const createUser = async (userData: {
+  email: string;
+  name: string;
+  password: string;
+}): Promise<{ success: boolean; message: string }> => {
   const responses = await verifyUserFromCache();
   if (responses != null) {
-    return responses;
+    return {
+      success: false,
+      message: "Usuario ya verificado",
+    };
   }
-  const newUser = new Parse.Object("users");
+  // const countDowns = new Parse.Query("conteos");
+  //   countDowns.equalTo("createdBy", user.userId);
+  const verifyUser = new Parse.Query("usuarios");
+  verifyUser.equalTo("email", userData.email);
+  const user = await verifyUser.first();
+  if (user) {
+    // alert(user.get("userId"));
+    const token = user.get("userId");
+    localStorage.setItem("token", token);
+    return { success: true, message: `Bienvenido ${user.get("name")}` };
+  }
+
+  const newUser = new Parse.Object("usuarios");
   const nanoid = customAlphabet("1234567890abcdef", 6);
   const tokenUser = nanoid();
   newUser.set("userId", tokenUser);
-  newUser.set("email", "undefined");
-  newUser.set("name", "undefined");
-  newUser.set("password", "undefined");
+  newUser.set("email", userData.email);
+  newUser.set("name", userData.name);
+  newUser.set("defaultPassword", userData.password);
 
   try {
     const result = await newUser.save();
     console.log("New object created with objectId: " + result.id);
     localStorage.setItem("token", tokenUser);
-    return true;
-  } catch (error: Parse.Error) {
+    return {
+      success: true,
+      message: "Usuario creado correctamente",
+    };
+  } catch (error: any) {
     console.error(
       "Failed to create new object, with error code: " + error.message
     );
-    return false;
+    return {
+      success: false,
+      message: `Error al crear el usuario: ${error.message}`,
+    };
   }
 };
 
-export const loginCredentials = (): void => {};
-
-export const addNewSegment = async ({
-  nameSegment,
-  typeOfRegister,
-  timeInterval,
-  numbersInterval,
-}: {
-  nameSegment: string;
-  typeOfRegister: string;
-  timeInterval: number;
-  numbersInterval: number;
-}): Promise<string> => {
-  const res = await verifyUserFromCache();
-  if (res) {
-    const tokenCache = localStorage.getItem("token");
-    const newSegment = new Parse.Object("counts");
-    newSegment.set("nameSegment", nameSegment);
-    newSegment.set("typeOfRegister", typeOfRegister);
-    newSegment.set("timeInterval", timeInterval);
-    newSegment.set("numbersInterval", numbersInterval);
-    newSegment.set("currentNumber", 0);
-    newSegment.set("userId", tokenCache);
-    try {
-      let result = await newSegment.save();
-      console.log("New object created with objectId: " + result.id);
-      return "Se creó un nuevo segmento " + result.id;
-    } catch (error: Parse.Error) {
-      console.log(
-        "Failed to create new object, with error code: " + error.message
-      );
-      return "No se pudo crear el segmento";
+export const getCountDownsByUser = async () => {
+  const user = await verifyUserFromCache();
+  if (user == null)
+    return {
+      success: false,
+      message: "Error con la autenticación del usuario",
+    };
+  try {
+    const arr = [];
+    const countDowns = new Parse.Query("conteos");
+    countDowns.equalTo("createdBy", user.userId);
+    const results = await countDowns.find();
+    for (const object of results) {
+      arr.push({
+        startDate: object.get("startDate"),
+        endDate: object.get("endDate"),
+        name: object.get("nameCountDown"),
+      });
     }
-  } else {
-    console.log("Token de usuario no se encontró en DB");
-    return "No se pudo crear el segmento";
+    return {
+      success: true,
+      message: "Datos obtenidos",
+      data: arr,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Error al obtener datos del usuario",
+    };
   }
 };
 
+export const createCountDownByUser = async (
+  userData: countDownProps
+): Promise<promiseProps> => {
+  const { startDate, createdBy, endDate, nameCountDown } = userData;
+  const user = await verifyUserFromCache();
+  if (user == null)
+    return {
+      success: false,
+      message: "Error con la autenticación del usuario",
+    };
+
+  try {
+    const newCountDown = new Parse.Object("conteos");
+    newCountDown.set("nameCountDown", nameCountDown);
+    newCountDown.set("startDate", startDate);
+    newCountDown.set("endDate", endDate);
+    newCountDown.set("createdBy", user.userId);
+    // newCountDown.set("nameCountDown", nameCountDown);
+    // newCountDown.set("startDate", new Date(startDate));
+    // newCountDown.set("endDate", new Date(endDate));
+    // newCountDown.set("createdBy", user.userId);
+    await newCountDown.save();
+    return {
+      success: true,
+      message: "Se creo el countdown" + newCountDown.id,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      message: "InValido" + error,
+    };
+  }
+};
 
 export const fetchSegment = async (): Promise<any> => {
   const tokenCache = localStorage.getItem("token");
@@ -164,6 +268,16 @@ export const fetchObjectById = async (objectId: string): Promise<any> => {
   } else {
     console.log("Token de usuario no se encontro en DB");
   }
+};
+
+export const closeLog = () => {
+  localStorage.setItem("token", "");
+  addToast({
+    color: "success",
+    title: "Se cerró la sesión ",
+    description: "Vuelve pronto!",
+    promise: new Promise((resolve) => setTimeout(resolve, 800)),
+  });
 };
 
 export const updateUserNameById = async (data: {
