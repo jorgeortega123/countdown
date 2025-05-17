@@ -2,13 +2,6 @@ import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import Parse from "parse/dist/parse.min.js";
 
-const PARSE_APPLICATION_ID = "BCrUQVkk80pCdeImSXoKXL5ZCtyyEZwbN7mAb11f";
-const PARSE_HOST_URL = "https://parseapi.back4app.com";
-const PARSE_JAVASCRIPT_KEY = "4wPYRKbpTJeCdmFNaS31AiQZ8344aaYubk6Uo8VW";
-
-Parse.initialize(PARSE_APPLICATION_ID, PARSE_JAVASCRIPT_KEY);
-Parse.serverURL = PARSE_HOST_URL;
-
 export default function AddCountdowns({ setreloadCount, reloadCount }) {
   const [showEmail, setshowEmail] = useState(false);
   const [currentlyEmail, setcurrentlyEmail] = useState("");
@@ -88,7 +81,7 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
     }
 
     const dataBaseSave = async () => {
-      let user = "jorge593s";
+      let user = "jorge593";
       const query = new Parse.Query("users");
       query.equalTo("userId", user);
       const infoUser = await query.first();
@@ -103,16 +96,21 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
     dataBaseSave();
   };
 
+  const agregarCountdown = (event) => {
+    event.preventDefault();
+    var { name, date, hour_finish, init, hour_init } = information;
+  };
+
   return (
-    <form onSubmit={addButton}>
-      <div className="text-[14px] bg-[#2c2c2cf6] border-[1px] rounded-[6px] text-white p-2">
+    <form className=" px-2 sm:px-0" onSubmit={addButton}>
+      <div className="text-[14px] bg-gray-800 border-gray-950 rounded-[6px] text-white p-2">
         <p className="font-bold">
-          Add
+          Agregar un evento personalizado
           <span className="font-normal text-red-500 px-4">{showMensaje}</span>
         </p>
         <div className="my-2 input-container flex flex-col border relative p-[3px]">
           <p className="text-[1rem] top-[-2px] absolute text-above-forms pl-1 pt-1">
-            Name of countdown
+            Nombre
           </p>
           <input
             required
@@ -126,7 +124,7 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
         <div className="grid grid-cols-2 gap-2 my-2 ">
           <div className=" input-container flex flex-col border relative p-[3px]">
             <p className="text-[1rem] absolute text-above-forms pl-1 pt-1">
-              Start
+              Inicio (Opcional)
             </p>
             <input
               onChange={(e) => {
@@ -140,7 +138,7 @@ export default function AddCountdowns({ setreloadCount, reloadCount }) {
           </div>
           <div className="input-container flex flex-col border relative p-[3px]">
             <p className="text-[1rem] absolute text-above-forms pl-1 pt-1">
-              End
+              Final
             </p>
             <input
               onChange={(e) => {
