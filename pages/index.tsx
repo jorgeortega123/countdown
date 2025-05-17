@@ -1,13 +1,13 @@
 import Countdown from "../src/Countdown";
-import Login from "../src/components/Login";
 import NavView from "../src/components/NavView";
 import OthersCountdowns from "../src/components/OthersCountdowns";
-import AddCountdowns from "../src/components/AddCountdowns";
-import Database from "../src/components/Database";
 import { useEffect, useRef, useState } from "react";
-import MainScreen from "../src/components/jetMatch/MainScreen";
+import usePingedCountDown from "../context/UsePingedCountDown";
+import AgregarCountDown from "../components/Modals/AgregarCountDown";
+import QuickAddCountDown from "../components/QuickAddCountDown";
+import CountDownsByUser from "../components/CountDownsByUser";
 export default function Home() {
-  const [fixedCount, setfixedCount] = useState({ name: "", date: "" });
+  const { fixedCount, setfixedCount } = usePingedCountDown();
   const [reloadCount, setreloadCount] = useState(false);
   const [showLogin, setshowLogin] = useState(false);
   const [showFullScreen, setshowFullScreen] = useState(false);
@@ -15,10 +15,7 @@ export default function Home() {
   const containerScren = useRef(null);
   useEffect(() => {
     //@ts-ignore
-    var local = JSON.parse(localStorage.getItem("anchor"));
-    if (local) {
-      setfixedCount({ name: local.name, date: local.date });
-    }
+ 
     if (showFullScreen) {
       document.getElementById("full")?.requestFullscreen();
       document.body.style.overflow = "hidden";
@@ -34,35 +31,28 @@ export default function Home() {
     }
   }, [reloadCount, showFullScreen]);
 
-  // const enterFullscreen = () => {
-  //   const element = document.documentElement;
-  //   if (element.requestFullscreen) {
-  //     element.requestFullscreen();
-  //   } else if (element.mozRequestFullScreen) {
-  //     element.mozRequestFullScreen();
-  //   } else if (element.webkitRequestFullscreen) {
-  //     element.webkitRequestFullscreen();
-  //   } else if (element.msRequestFullscreen) {
-  //     element.msRequestFullscreen();
-  //   }
-  // };
-
   const exitFullscreen = () => {
     setshowFullScreen(false);
     if (document.exitFullscreen) {
-      document.exitFullscreen();
-    // } else if (document.mozCancelFullScreen) {
-    //   document.mozCancelFullScreen();
-    // } else if (document.webkitExitFullscreen) {
-    //   document.webkitxitFullscreen();
-    // } else if (document.msExitFullscreen) {
-    //   document.msExitFullscreen();
-    // }
+      try {
+        document.exitFullscreen();
+      } catch (error) {
+        console.error(error);
+      }
+
+      // } else if (document.mozCancelFullScreen) {
+      //   document.mozCancelFullScreen();
+      // } else if (document.webkitExitFullscreen) {
+      //   document.webkitxitFullscreen();
+      // } else if (document.msExitFullscreen) {
+      //   document.msExitFullscreen();
+      // }
+    }
   };
-  }
+
   return (
     <>
-      <div id="full" className="max-w-screen relative">
+      <div id="full" className="max-w-screen  relative px">
         {showFullScreen && (
           <div className="absolute w-full h-screen bg-[#141414] z-[7]">
             <button className="border" onClick={exitFullscreen}>
@@ -89,16 +79,15 @@ export default function Home() {
                   {fixedCount.name}
                 </p>
                 {/* @ts-ignore */}
-                <Countdown finish={fixedCount.date} />
+                <Countdown fixed data={fixedCount} finish={fixedCount.date} />
               </div>
             </div>
           </div>
         )}
 
         {/* */}
-        {showLogin && <Login setshowLogin={setshowLogin} />}
 
-        <NavView setshowLogin={setshowLogin} />
+        <NavView />
         <div>
           <div className=" flex flex-col space-y-12">
             <div id="main" className="sticky top-0 z-[3]">
@@ -114,7 +103,7 @@ export default function Home() {
 
                     <div className=" counter-font title-count h-full flex justify-center items-center ">
                       {/* @ts-ignore */}
-                      <Countdown finish={fixedCount.date} showLines={"true"} />
+                      <Countdown data={fixedCount} finish={fixedCount.date} />
                     </div>
                     <div
                       ref={containerScren}
@@ -137,33 +126,30 @@ export default function Home() {
             </div>
             <div
               id="othersectoin"
-              className="flex flex-col justify-center items-center"
+              className="flex gap-3 flex-col justify-center items-center"
             >
-              <div className="max-w-[1000px]">
-                <div>
-                  <Database></Database>
-                </div>
-                <div className="relative h-[20px]">
-                  <p className=" font-bold absolute top-0 bg-[#181818] h-[24px] z-[2] px-2 w-max">
-                    Another countdowns
-                  </p>
-                  <div className="absolute top-[10px] w-full bg-[#adadad93] h-[2px] z-[1]"></div>
-                </div>
+              <div className="max-w-[1000px] flex gap-3 flex-col">
+                <QuickAddCountDown />
+                {/* <div>
+                    <Database></Database>
+                  </div> */}
+
+                <CountDownsByUser />
+
                 <OthersCountdowns
                   reloadCount={reloadCount}
                   setreloadCount={setreloadCount}
                 />
-                <AddCountdowns
+                {/* <AddCountdowns
                   reloadCount={reloadCount}
                   setreloadCount={setreloadCount}
-                />
+                />  */}
+                <AgregarCountDown />
               </div>
             </div>
           </div>
         </div>
-        <div className="border w-full">
-          {/* <MainScreen></MainScreen> */}
-        </div>
+        <div className="border w-full">{/* <MainScreen></MainScreen> */}</div>
         <div
           id="footer"
           className="bg-[#0909096e] w-full h-[200px] px-6 py-4 flex"
