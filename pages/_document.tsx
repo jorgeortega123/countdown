@@ -7,7 +7,7 @@ export default function Document() {
       <Head>
         <script src="https://cdn.tailwindcss.com"></script>
       </Head>
-      <body>
+      <body className="dark">
         <Main />
         <NextScript />
       </body>
