@@ -72,10 +72,9 @@ export default function NavView() {
                 <DropdownMenu aria-label="Static Actions">
                   <DropdownItem key="new">Editar infomación</DropdownItem>
                   <DropdownItem key="copy">Ver mis contadores</DropdownItem>
-                  <DropdownItem key="edit">Edit file</DropdownItem>
+                  {/* <DropdownItem key="edit">Edit file</DropdownItem> */}
                   <DropdownItem
                     onClick={async () => {
-                      
                       closeLog();
                       reloadData();
                       router.reload();
