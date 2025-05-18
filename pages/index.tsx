@@ -6,16 +6,18 @@ import usePingedCountDown from "../context/UsePingedCountDown";
 import AgregarCountDown from "../components/Modals/AgregarCountDown";
 import QuickAddCountDown from "../components/QuickAddCountDown";
 import CountDownsByUser from "../components/CountDownsByUser";
+
 export default function Home() {
   const { fixedCount, setfixedCount } = usePingedCountDown();
   const [reloadCount, setreloadCount] = useState(false);
-  const [showLogin, setshowLogin] = useState(false);
   const [showFullScreen, setshowFullScreen] = useState(false);
   const [rotate, setrotate] = useState(false);
   const containerScren = useRef(null);
+  const currentDate: Date = new Date();
+
+  const fullYear: number = currentDate.getFullYear();
+
   useEffect(() => {
-    //@ts-ignore
- 
     if (showFullScreen) {
       document.getElementById("full")?.requestFullscreen();
       document.body.style.overflow = "hidden";
@@ -39,14 +41,6 @@ export default function Home() {
       } catch (error) {
         console.error(error);
       }
-
-      // } else if (document.mozCancelFullScreen) {
-      //   document.mozCancelFullScreen();
-      // } else if (document.webkitExitFullscreen) {
-      //   document.webkitxitFullscreen();
-      // } else if (document.msExitFullscreen) {
-      //   document.msExitFullscreen();
-      // }
     }
   };
 
@@ -149,32 +143,22 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="border w-full">{/* <MainScreen></MainScreen> */}</div>
-        <div
-          id="footer"
-          className="bg-[#0909096e] w-full h-[200px] px-6 py-4 flex"
-        >
-          <div>
-            <p className="py-2 font-bold">Countdown</p>
-            <div className="">
-              {" "}
-              Made by <span> Jorge Ortega</span>
-              <p>Another proyect to portfolio</p>
-            </div>
-
-            <p className="absolute bottom-0 left-0 px-1 text-[13px]">
-              Want to see more proyects like this ?{" "}
-              <a
-                href="https://jorge-ortega.pages.dev/"
-                target={"_blank"}
-                rel="noreferrer "
-                className="underline"
-              >
-                Click here
-              </a>
-            </p>
-          </div>
+        <div className="border w-full lg:w-[60%] mx-auto mt-8 mb-2">
+          {/* <MainScreen></MainScreen> */}
         </div>
+        <footer className=" h-[200px] w-full mx-auto items-center justify-center px-6 py-4 flex">
+          <div className="text-[1.3rem]">
+            © Copyright {fullYear}. Hecho por{" "}
+            <a
+              rel="noreferrer"
+              target="_blank"
+              className="underline"
+              href="https://jorgeortega.vercel.app/"
+            >
+              Jorge Ortega
+            </a>
+          </div>
+        </footer>
       </div>
     </>
   );
